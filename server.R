@@ -3,16 +3,21 @@ library(shiny)
 library(ggplot2)
 library(dplyr)
 library(RColorBrewer)
-server <- function(input, output,session) {
+shinyServer(function(input, output,session) {
+  
   observeEvent(
-    { 
-      input$RegiuneInput 
-    },{
-      input$judetInput
-      temp <- temp %>% filter(CMR%in%input$RegiuneInput)
-      updateSelectInput(session,"judetInput",choices = unique(temp$NUME))
-    }
-  )
+    
+    input$RegiuneInput,
+    updateSelectInput(session,"RegiuneInput","Regiune",
+                      choices = temp$CMR[temp$NUME==input$RegiuneInput]))
+  
+  #observeEvent(
+  #input$judetInput,
+  ##updateSelectInput(session, "judetInput", "Judet", 
+  #                choices = temp$NUME[data$NUME==input$judetInput & temp$CMR==input$RegiuneInput]))
+  
+  
+  
   
   output$coolplot <- renderPlot({
     filtered1 <-
@@ -22,7 +27,7 @@ server <- function(input, output,session) {
         NUME == input$judetInput
         
       )
-
+    
     ggplot(filtered1,
            aes(x = Data, y = 1, fill = Temp))+
       geom_tile() +
@@ -31,4 +36,6 @@ server <- function(input, output,session) {
       theme_void()
     
   })
-}
+})
+
+
